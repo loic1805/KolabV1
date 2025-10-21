@@ -72,4 +72,4 @@ Encadré par **Georges Mathieu** & **Daniel Dos Santos**
 
 ---
 
-🧩 **Kolab** — Simplifions la rénovation, ensemble.
+🧩 **Kolab** — Kolaborons
