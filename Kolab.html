@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kolab - Proof of Concept</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .screen {
+            min-height: 100vh;
+        }
+
+        /* Home Screen */
+        .home-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .home-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .home-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .home-content {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .home-content h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .choice-btn {
+            background: white;
+            color: #667eea;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .choice-btn .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .choice-btn h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .features-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .features-box h3 {
+            margin-bottom: 1rem;
+        }
+
+        .features-box ul {
+            list-style: none;
+        }
+
+        .features-box li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .features-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Header */
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Scan Screen */
+        .content {
+            padding: 2rem;
+            background: #f3f4f6;
+            min-height: calc(100vh - 70px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .step-header h3 {
+            font-size: 1.8rem;
+        }
+
+        select, textarea, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .scan-area {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .scan-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .model-3d {
+            background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        /* Artisans List */
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+
+        .artisan-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .artisan-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .artisan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .artisan-info {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .artisan-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .artisan-details h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .profession {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: #fbbf24;
+        }
+
+        .price-box {
+            text-align: right;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .artisan-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .btn-select {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .summary-bar {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        /* Planning */
+        .gantt-container {
+            margin: 2rem 0;
+        }
+
+        .gantt-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .gantt-header .label {
+            width: 200px;
+        }
+
+        .gantt-header .days {
+            flex: 1;
+            display: flex;
+        }
+
+        .gantt-header .day {
+            flex: 1;
+            text-align: center;
+        }
+
+        .gantt-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .task-label {
+            width: 200px;
+        }
+
+        .task-label .name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .task-label .artisan {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .gantt-timeline {
+            flex: 1;
+            background: #f3f4f6;
+            border-radius: 5px;
+            height: 50px;
+            position: relative;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .summary-item .label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .summary-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 0.25rem;
+        }
+
+        /* Artisan View */
+        .project-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: #667eea;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .new-badge {
+            background: #ede9fe;
+            color: #6d28d9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .premium-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .premium-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .premium-card ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .premium-card li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .premium-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .home-header h1 {
+                font-size: 2rem;
+            }
+
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .artisan-header {
+                flex-direction: column;
+            }
+
+            .summary-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen home-screen">
+        <div class="container">
+            <div class="home-header">
+                <h1>Kolab</h1>
+                <p style="font-size: 1.2rem;">Proof of Concept - Plateforme de Rénovation</p>
+            </div>
+            
+            <div class="home-content">
+                <h2>Démarrer votre projet</h2>
+                
+                <div class="buttons-grid">
+                    <button class="choice-btn" onclick="goToScreen('scan')">
+                        <div class="icon">📱</div>
+                        <h3>Je suis Particulier</h3>
+                        <p>Je veux rénover mon logement</p>
+                    </button>
+                    
+                    <button class="choice-btn" onclick="goToScreen('artisan')">
+                        <div class="icon">👷</div>
+                        <h3>Je suis Artisan</h3>
+                        <p>Je cherche des projets</p>
+                    </button>
+                </div>
+
+                <div class="features-box">
+                    <h3>Fonctionnalités du POC :</h3>
+                    <ul>
+                        <li>Simulation de scan 3D</li>
+                        <li>Mise en relation avec artisans</li>
+                        <li>Comparaison de devis</li>
+                        <li>Planning de projet (Gantt)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCAN SCREEN -->
+    <div id="scan-screen" class="screen hidden">
+        <div class="header">
+            <h2>Kolab - Nouveau Projet</h2>
+            <button class="btn btn-back" onclick="goToScreen('home')">Retour</button>
+        </div>
+        <div class="content">
+            <div class="card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h3>Scanner votre espace</h3>
+                </div>
+                
+                <select id="roomType" onchange="handleRoomTypeChange()">
+                    <option value="">Sélectionnez le type de pièce</option>
+                    <option value="bathroom">Salle de bain</option>
+                    <option value="kitchen">Cuisine</option>
+                    <option value="bedroom">Chambre</option>
+                    <option value="living">Salon</option>
+                </select>
+
+                <div id="scanArea" class="hidden">
+                    <div class="scan-area">
+                        <div class="scan-icon">📱</div>
+                        <p style="margin-bottom: 2rem; color: #6b7280;">Utilisez votre smartphone pour scanner la pièce</p>
+                        <button id="scanBtn" class="btn btn-primary" onclick="startScan()" style="padding: 1rem 3rem; font-size: 1.1rem;">
+                            Démarrer le scan 3D
+                        </button>
+                    </div>
+                </div>
+
+                <div id="scanProgress" class="hidden" style="padding: 2rem;">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="progressText" style="text-align: center; font-size: 1.2rem; font-weight: bold; color: #667eea;">Scan en cours... 0%</p>
+                </div>
+
+                <div id="scanComplete" class="hidden">
+                    <div class="success-box">
+                        <div class="success-header">
+                            <span style="font-size: 2rem;">✓</span>
+                            <p style="font-size: 1.2rem; font-weight: bold; color: #065f46;">Scan 3D complété avec succès !</p>
+                        </div>
+                        
+                        <div class="model-3d">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🏠</div>
+                            <p style="color: #6b7280;">Modèle 3D de votre <span id="roomName"></span></p>
+                        </div>
+
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Décrivez votre projet :</label>
+                        <textarea id="description" rows="4" placeholder="Ex: Rénovation complète, changement de carrelage, nouvelle douche..."></textarea>
+
+                        <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Budget estimé :</label>
+                        <input type="text" id="budget" placeholder="Ex: 5000€ - 10000€">
+
+                        <button class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;" onclick="goToArtisans()">
+                            Trouver des artisans
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTISANS SCREEN -->
+    <div id="artisans-screen" class="screen hidden">
+        <div class="header">
+            <h2>Artisans disponibles</h2>
+            <button class="btn btn-back" onclick="goToScreen('scan')">Retour</button>
+        </div>
+        <div class="content">
+            <div class="container" style="max-width: 1000px;">
+                <div class="info-box">
+                    <p style="font-weight: bold; margin-bottom: 0.25rem;">🤖 Métiers détectés automatiquement :</p>
+                    <p>Plombier, Carreleur, Électricien</p>
+                </div>
+
+                <div id="artisansList"></div>
+
+                <div id="summaryBar" class="summary-bar hidden">
+                    <div>
+                        <p style="font-weight: bold; font-size: 1.1rem;"><span id="selectedCount">0</span> artisan(s) sélectionné(s)</p>
+                        <p style="color: #6b7280;">Total estimé: <span id="totalPrice">0</span>€</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="goToScreen('planning')" style="padding: 1rem 2rem;">
+                        Voir le planning
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLANNING SCREEN -->
+    <div id="planning-screen" class="screen hidden">
+        <div class="header">
+            <h2>Planning du projet</h2>
+            <button class="btn btn-back" onclick="goToScreen('artisans')">Retour</button>
+        </div>
+        <div class="content">
+            <div class="card" style="max-width: 1000px;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 2rem;">Diagramme de Gantt - Chronologie des travaux</h3>
+                
+                <div class="gantt-container">
+                    <div class="gantt-header">
+                        <div class="label"></div>
+                        <div class="days">
+                            <div class="day">J1</div>
+                            <div class="day">J2</div>
+                            <div class="day">J3</div>
+                            <div class="day">J4</div>
+                            <div class="day">J5</div>
+                            <div class="day">J6</div>
+                            <div class="day">J7</div>
+                            <div class="day">J8</div>
+                            <div class="day">J9</div>
+                            <div class="day">J10</div>
+                            <div class="day">J11</div>
+                            <div class="day">J12</div>
+                            <div class="day">J13</div>
+                            <div class="day">J14</div>
+                            <div class="day">J15</div>
+                        </div>
+                    </div>
+
+                    <div class="gantt-row">
+                        <div class="task-label">
+                            <div class="name">Plomberie</div>
+                            <div class="artisan">Jean Dupont</div>
+                        </div>
+                        <div class="gantt-timeline">
+                            <div class="gantt-bar" style="left: 0%; width: 33.33%; background: #3b82f6;">5j</div>
+                        </div>
+                    </div>
+
+                    <div class="gantt-row">
+                        <div class="task-label">
+                            <div class="name">Carrelage</div>
+                            <div class="artisan">Marie Martin</div>
+                        </div>
+                        <div class="gantt-timeline">
+                            <div class="gantt-bar" style="left: 33.33%; width: 26.67%; background: #10b981;">4j</div>
+                        </div>
+                    </div>
+
+                    <div class="gantt-row">
+                        <div class="task-label">
+                            <div class="name">Électricité</div>
+                            <div class="artisan">Pierre Lefebvre</div>
+                        </div>
+                        <div class="gantt-timeline">
+                            <div class="gantt-bar" style="left: 53.33%; width: 20%; background: #f59e0b;">3j</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4 style="font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; color: #065f46;">Récapitulatif du projet</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="label">Durée totale:</div>
+                            <div class="value">11 jours</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="label">Coût total:</div>
+                            <div class="value">5500€</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; padding: 1.25rem; font-size: 1.2rem;" onclick="confirmProject()">
+                    Confirmer et payer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTISAN SCREEN -->
+    <div id="artisan-screen" class="screen hidden">
+        <div class="header">
+            <h2>Espace Artisan</h2>
+            <button class="btn btn-back" onclick="goToScreen('home')">Retour</button>
+        </div>
+        <div class="content">
+            <div class="card" style="max-width: 900px;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 2rem;">Nouveaux projets disponibles</h3>
+                
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <h4 style="font-size: 1.2rem; font-weight: bold;">Rénovation salle de bain</h4>
+                            <p style="color: #6b7280; font-size: 0.9rem;">Paris 11ème • Publié il y a 2h</p>
+                        </div>
+                        <span class="new-badge">Nouveau</span>
+                    </div>
+                    
+                    <p style="color: #4b5563; margin: 1rem 0;">Recherche plombier pour rénovation complète d'une salle de bain (8m²). Modèle 3D disponible.</p>
+                    
+                    <div class="project-meta">
+                        <div>💰 Budget: 2000-3000€</div>
+                        <div>📅 Démarrage: Dans 3 semaines</div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                        Voir le modèle 3D et proposer un devis
+                    </button>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div>
+                            <h4 style="font-size: 1.2rem; font-weight: bold;">Rénovation cuisine</h4>
+                            <p style="color: #6b7280; font-size: 0.9rem;">Paris 10ème • Publié il y a 5h</p>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #4b5563; margin: 1rem 0;">Installation électrique complète pour nouvelle cuisine équipée.</p>
+                    
+                    <div class="project-meta">
+                        <div>💰 Budget: 1500-2000€</div>
+                        <div>📅 Démarrage: Dans 2 semaines</div>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                        Voir le modèle 3D et proposer un devis
+                    </button>
+                </div>
+
+                <div class="premium-card">
+                    <h3>Passez au Premium</h3>
+                    <ul>
+                        <li>Accès anticipé aux nouveaux projets</li>
+                        <li>Profil mis en avant</li>
+                        <li>Badge certifié premium</li>
+                    </ul>
+                    <button class="btn" style="background: white; color: #667eea; padding: 1rem 2rem; font-weight: bold;">
+                        50€/mois - S'abonner
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const artisansData = [
+            {
+                id: 1,
+                name: "Jean Dupont",
+                profession: "Plombier",
+                rating: 4.8,
+                reviews: 127,
+                price: 2500,
+                availability: "Disponible dans 2 semaines",
+                certifications: ["RGE", "Qualibat"],
+                location: "Paris 11ème"
+            },
+            {
+                id: 2,
+                name: "Marie Martin",
+                profession: "Carreleur",
+                rating: 4.9,
+                reviews: 98,
+                price: 1800,
+                availability: "Disponible dans 1 semaine",
+                certifications: ["Qualibat"],
+                location: "Paris 10ème"
+            },
+            {
+                id: 3,
+                name: "Pierre Lefebvre",
+                profession: "Électricien",
+                rating: 4.7,
+                reviews: 156,
+                price: 1200,
+                availability: "Disponible dans 3 semaines",
+                certifications: ["RGE", "Qualifelec"],
+                location: "Paris 12ème"
+            }
+        ];
+
+        let selectedArtisans = [];
+
+        function goToScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenName + '-screen').classList.remove('hidden');
+        }
+
+        function handleRoomTypeChange() {
+            const roomType = document.getElementById('roomType').value;
+            const scanArea = document.getElementById('scanArea');
+            if (roomType) {
+                scanArea.classList.remove('hidden');
+            } else {
+                scanArea.classList.add('hidden');
+            }
+        }
+
+        function startScan() {
+            document.getElementById('scanArea').classList.add('hidden');
+            document.getElementById('scanProgress').classList.remove('hidden');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = 'Scan en cours... ' + progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('scanProgress').classList.add('hidden');
+                        document.getElementById('scanComplete').classList.remove('hidden');
+                        const roomType = document.getElementById('roomType').value;
+                        let roomName = '';
+                        switch (roomType) {
+                            case 'bathroom': roomName = 'salle de bain'; break;
+                            case 'kitchen': roomName = 'cuisine'; break;
+                            case 'bedroom': roomName = 'chambre'; break;
+                            case 'living': roomName = 'salon'; break;
+                        }
+                        document.getElementById('roomName').textContent = roomName;
+                    }, 500);
+                }
+            }, 400);
+        }
+
+        function goToArtisans() {
+            goToScreen('artisans');
+            renderArtisans();
+        }
+
+        function renderArtisans() {
+            const container = document.getElementById('artisansList');
+            container.innerHTML = '';
+
+            artisansData.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'artisan-card';
+                card.innerHTML = `
+                    <div class="artisan-header">
+                        <div class="artisan-info">
+                            <div class="artisan-avatar">${a.name.charAt(0)}</div>
+                            <div class="artisan-details">
+                                <h3>${a.name}</h3>
+                                <div class="profession">${a.profession}</div>
+                                <div class="rating">
+                                    <span class="stars">★</span> ${a.rating} (${a.reviews} avis)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price-box">
+                            <div class="price">${a.price}€</div>
+                        </div>
+                    </div>
+                    <div class="artisan-meta">
+                        <div>📍 ${a.location}</div>
+                        <div>⏱️ ${a.availability}</div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        ${a.certifications.map(c => `<span class="badge">${c}</span>`).join('')}
+                    </div>
+                    <button class="btn btn-success btn-select" onclick="toggleSelect(${a.id})">
+                        Sélectionner cet artisan
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleSelect(id) {
+            const index = selectedArtisans.indexOf(id);
+            if (index === -1) {
+                selectedArtisans.push(id);
+            } else {
+                selectedArtisans.splice(index, 1);
+            }
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summaryBar = document.getElementById('summaryBar');
+            const selectedCount = document.getElementById('selectedCount');
+            const totalPrice = document.getElementById('totalPrice');
+
+            if (selectedArtisans.length > 0) {
+                summaryBar.classList.remove('hidden');
+            } else {
+                summaryBar.classList.add('hidden');
+            }
+
+            const selectedData = artisansData.filter(a => selectedArtisans.includes(a.id));
+            const total = selectedData.reduce((sum, a) => sum + a.price, 0);
+
+            selectedCount.textContent = selectedArtisans.length;
+            totalPrice.textContent = total;
+        }
+
+        function confirmProject() {
+            alert("✅ Projet confirmé ! Les paiements et notifications ont été envoyés aux artisans sélectionnés.");
+            goToScreen('home');
+            selectedArtisans = [];
+        }
+    </script>
+</body>
+</html>
